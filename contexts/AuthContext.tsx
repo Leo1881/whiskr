@@ -11,6 +11,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signInWithApple: () => Promise<void>;
+  signInAsGuest: () => void;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
@@ -101,10 +102,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const signInAsGuest = () => {
+    // Create a mock user object for guest access
+    const guestUser = {
+      id: 'guest-user-123',
+      email: 'guest@whiskr.com',
+      user_metadata: {
+        username: 'Guest User',
+      },
+      app_metadata: {},
+      aud: 'authenticated',
+      created_at: new Date().toISOString(),
+    } as User;
+
+    setUser(guestUser);
+    setSession(null); // No real session for guest
+    setLoading(false);
+  };
+
   const signOut = async () => {
     setLoading(true);
     try {
-      await AuthService.signOut();
+      // If it's a guest user, just clear the state
+      if (user?.id === 'guest-user-123') {
+        setUser(null);
+        setSession(null);
+      } else {
+        await AuthService.signOut();
+      }
     } finally {
       setLoading(false);
     }
@@ -126,6 +151,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signIn,
     signInWithGoogle,
     signInWithApple,
+    signInAsGuest,
     signOut,
     resetPassword,
     updatePassword,

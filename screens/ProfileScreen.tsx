@@ -17,10 +17,21 @@ export default function ProfileScreen() {
     joinedDate: new Date().toLocaleDateString(),
   });
 
+  const isGuest = user?.id === 'guest-user-123';
+
   const handleSignOut = () => {
-    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+    const title = isGuest ? 'Exit Guest Mode' : 'Sign Out';
+    const message = isGuest
+      ? 'Are you sure you want to exit guest mode? You can always continue as guest again.'
+      : 'Are you sure you want to sign out?';
+
+    Alert.alert(title, message, [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: signOut },
+      {
+        text: isGuest ? 'Exit' : 'Sign Out',
+        style: 'destructive',
+        onPress: signOut,
+      },
     ]);
   };
 
@@ -62,8 +73,19 @@ export default function ProfileScreen() {
             {user?.email?.charAt(0).toUpperCase() || 'U'}
           </Text>
         </View>
-        <Text style={styles.userName}>{user?.email || 'User'}</Text>
-        <Text style={styles.userEmail}>{user?.email}</Text>
+        <Text style={styles.userName}>
+          {isGuest
+            ? 'Guest User'
+            : user?.user_metadata?.username || user?.email || 'User'}
+        </Text>
+        <Text style={styles.userEmail}>
+          {isGuest ? 'Browsing as guest' : user?.email}
+        </Text>
+        {isGuest && (
+          <Text style={styles.guestNote}>
+            Sign up to save your favorites and reviews!
+          </Text>
+        )}
       </View>
 
       <View style={styles.statsContainer}>
@@ -97,7 +119,9 @@ export default function ProfileScreen() {
 
       <View style={styles.signOutContainer}>
         <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-          <Text style={styles.signOutText}>Sign Out</Text>
+          <Text style={styles.signOutText}>
+            {isGuest ? 'Exit Guest Mode' : 'Sign Out'}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -143,6 +167,13 @@ const styles = StyleSheet.create({
   userEmail: {
     fontSize: 16,
     color: '#666',
+  },
+  guestNote: {
+    fontSize: 14,
+    color: '#8B4513',
+    fontStyle: 'italic',
+    marginTop: 5,
+    textAlign: 'center',
   },
   statsContainer: {
     flexDirection: 'row',

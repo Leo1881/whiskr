@@ -15,7 +15,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
-  const { signIn, signInWithGoogle, loading } = useAuth();
+  const { signIn, signInWithGoogle, signInAsGuest, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -117,6 +117,27 @@ export default function LoginScreen() {
           >
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.guestButton]}
+            onPress={() => {
+              Alert.alert(
+                'Continue as Guest',
+                'You can browse whiskeys without an account. Sign up later to save your favorites!',
+                [
+                  {
+                    text: 'Continue',
+                    onPress: () => {
+                      signInAsGuest();
+                    },
+                  },
+                ]
+              );
+            }}
+            disabled={loading}
+          >
+            <Text style={styles.guestButtonText}>Continue as Guest</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.footer}>
@@ -183,6 +204,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
   },
+  guestButton: {
+    backgroundColor: '#A0522D',
+    marginTop: 10,
+  },
   buttonText: {
     color: '#fff',
     fontSize: 16,
@@ -190,6 +215,11 @@ const styles = StyleSheet.create({
   },
   googleButtonText: {
     color: '#333',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  guestButtonText: {
+    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
