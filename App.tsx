@@ -38,13 +38,18 @@ export default function App() {
 
   const loadWhiskeys = async () => {
     try {
+      console.log('🍾 Loading whiskeys from database...');
+
       const { data, error } = await supabase
         .from('whiskey_with_ratings')
         .select('*')
-        .limit(10);
+        .limit(20)
+        .order('average_rating', { ascending: false });
 
       if (error) throw error;
       setWhiskeys(data || []);
+
+      console.log(`✅ Loaded ${data?.length || 0} whiskeys from database`);
     } catch (error) {
       console.error('Error loading whiskeys:', error);
     }
